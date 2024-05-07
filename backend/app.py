@@ -1,6 +1,9 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
 from utils import Dehaze, SaveImage
+
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:5173"])
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -17,7 +20,7 @@ def hello_world():
         try:
             dehaze_image = Dehaze(f"./image/{file_name}")
             SaveImage(dehaze_image)
-            return send_from_directory("image", "image_dehazed.jpg", as_attachment=True)
+            return send_file("./image/image_dehazed.jpg", mimetype="image/jpg")
         except:
             return jsonify({"error": "An error occurred while processing the image!"})
 
