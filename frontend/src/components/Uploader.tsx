@@ -17,8 +17,7 @@ const Uploader = () => {
     const [preview, setPreview] = useState<string | null>(null);
 
     const { setUploadUrl } = useUpload();
-    const { getRootProps, getInputProps, open } = useDropzone({
-        noClick: true,
+    const { getRootProps, getInputProps } = useDropzone({
         multiple: false,
         accept: {
             "image/*": [".jpeg", ".png", ".webp", ".jpg"],
@@ -71,7 +70,6 @@ const Uploader = () => {
                     <form onSubmit={form.handleSubmit(onSubmit)}>
                         <div
                             {...getRootProps()}
-                            onClick={open}
                             className={cn(
                                 "border-2 h-fit w-full my-4 border-dashed border-border rounded-lg",
                                 {
@@ -104,7 +102,7 @@ const Uploader = () => {
                                 </div>
                             )}
                             <input
-                                {...getInputProps}
+                                {...getInputProps()}
                                 type="file"
                                 id="image"
                                 accept="image/*"
