@@ -26,7 +26,7 @@ const Uploader = () => {
         mutationKey: ["upload"],
         mutationFn: async (formData: FormData) => {
             const response = await axios.post(
-                "http://localhost:5000/",
+                "https://image-dehazing-wg25.onrender.com/",
                 formData,
                 { responseType: "blob" }
             );

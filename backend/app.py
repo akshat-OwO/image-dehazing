@@ -3,7 +3,7 @@ from flask_cors import CORS
 from utils import Dehaze, SaveImage
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"])
+CORS(app, origins=["http://localhost:5173", "https://image-dehazing-ten.vercel.app"])
 
 
 @app.route("/", methods=["GET", "POST"])
