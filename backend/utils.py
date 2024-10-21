@@ -85,30 +85,43 @@ def Dehaze(fn):
 def SaveImage(J):
     cv2.imwrite("./image/image_dehazed.jpg",J*255);
 
+def DehazeVideo(frame):
+    I = frame.astype('float64') / 255
+    dark = DarkChannel(I, 15)
+    A = AtmLight(I, dark)
+    te = TransmissionEstimate(I, A, 15)
+    t = TransmissionRefine(frame, te)
+    J = Recover(I, t, A, 0.1)
+    return (J * 255).astype('uint8')
+
+def ProcessVideo(input_path, output_path):
+    cap = cv2.VideoCapture(input_path)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        dehazed_frame = DehazeVideo(frame)
+        out.write(dehazed_frame)
+
+    cap.release()
+    out.release()
+
 if __name__ == '__main__':
     import sys
+
     try:
-        fn = sys.argv[1]
+        input_path = sys.argv[1]
+        output_path = sys.argv[2]
     except:
-        fn = './image/heat-hazed-dubai-attractions.jpg'
+        input_path = "./video/input.mp4"
+        output_path = "./video/output.mp4"
 
-    def nothing(*argv):
-        pass
-
-    src = cv2.imread(fn);
-
-    I = src.astype('float64')/255;
- 
-    dark = DarkChannel(I,15);
-    A = AtmLight(I,dark);
-    te = TransmissionEstimate(I,A,15);
-    t = TransmissionRefine(src,te);
-    J = Recover(I,t,A,0.1);
-
-    cv2.imshow("dark",dark);
-    cv2.imshow("t",t);
-    cv2.imshow('I',src);
-    cv2.imshow('J',J);
-    cv2.imwrite("./image/J.png",J*255);
-    cv2.waitKey();
+    ProcessVideo(input_path, output_path)
     
