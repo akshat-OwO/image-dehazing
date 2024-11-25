@@ -8,7 +8,7 @@ const Viewer = () => {
         uploadUrl.length > 0 && (
             <Card className="h-fit md:flex-1">
                 <CardHeader>
-                    <CardTitle>Dehazed Image</CardTitle>
+                    <CardTitle>Dehazed Image/Video</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="w-full rounded-lg">
