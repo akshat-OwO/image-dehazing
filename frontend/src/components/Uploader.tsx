@@ -64,9 +64,6 @@ const Uploader = () => {
             const blob = data.data;
             const imageData = URL.createObjectURL(blob);
             setUploadUrl(imageData);
-
-            const contentType = data.headers["Content-Type"] as string;
-            setBlobType(contentType.includes("image") ? "image" : "video");
         },
     });
 
@@ -75,6 +72,7 @@ const Uploader = () => {
         formData.append("type", values.type);
         formData.append("model", values.model);
         formData.append("file", values.file);
+        setBlobType(values.file.type.includes("image") ? "image" : "video");
         mutate(formData);
     };
 
