@@ -95,23 +95,45 @@ def DehazeVideo(frame):
     return (J * 255).astype('uint8')
 
 def ProcessVideo(input_path, output_path):
-    cap = cv2.VideoCapture(input_path)
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+    import subprocess
+    import tempfile
+    import os
 
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
+    # Create a temporary directory for frame processing
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Extract frames using ffmpeg
+        extract_cmd = [
+            'ffmpeg', '-i', input_path,
+            os.path.join(temp_dir, 'frame_%d.png')
+        ]
+        subprocess.run(extract_cmd, check=True)
 
-        dehazed_frame = DehazeVideo(frame)
-        out.write(dehazed_frame)
+        # Get the list of frames
+        frames = sorted([f for f in os.listdir(temp_dir) if f.startswith('frame_')])
+        
+        # Process each frame
+        for i, frame in enumerate(frames):
+            frame_path = os.path.join(temp_dir, frame)
+            # Read the frame
+            img = cv2.imread(frame_path)
+            # Process the frame
+            processed = DehazeVideo(img)
+            # Save the processed frame
+            cv2.imwrite(frame_path, processed)
+            print(f"Processing frame {i+1}/{len(frames)}")
 
-    cap.release()
-    out.release()
+        # Combine frames back into video using ffmpeg
+        combine_cmd = [
+            'ffmpeg', '-y',  # -y to overwrite output file if it exists
+            '-framerate', '30',  # or use original video's framerate
+            '-i', os.path.join(temp_dir, 'frame_%d.png'),
+            '-c:v', 'libx264',  # use H.264 codec
+            '-pix_fmt', 'yuv420p',  # pixel format for better compatibility
+            '-crf', '23',  # quality setting (lower = better quality, 23 is default)
+            '-preset', 'medium',  # encoding speed preset
+            output_path
+        ]
+        subprocess.run(combine_cmd, check=True)
 
 if __name__ == '__main__':
     import sys
