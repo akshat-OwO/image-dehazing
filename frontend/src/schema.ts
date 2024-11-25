@@ -1,20 +1,14 @@
 import * as z from "zod";
 
-const ACCEPTED_IMAGE_TYPES = [
-    "image/jpeg",
-    "image/jpg",
-    "image/png",
-    "image/webp",
-];
+const ACCEPTED_FILE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "video/mp4"];
 
 export const uploadSchema = z.object({
-    image: z
-        .custom<File>(
-            (file) => (file instanceof File ? true : false),
-            "Upload an image first!"
-        )
+    type: z.enum(["image", "video"]),
+    model: z.enum(["dcp", "ffa"]),
+    file: z
+        .custom<File>((file) => (file instanceof File ? true : false), "Upload an image first!")
         .refine(
-            (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
-            "Only .jpg, .jpeg, .png and .webp formats are supported."
+            (file) => ACCEPTED_FILE_TYPES.includes(file?.type),
+            "Only .jpg, .jpeg, .png, .mp4 and .webp formats are supported.",
         ),
 });

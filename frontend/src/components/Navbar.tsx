@@ -11,7 +11,7 @@ const Navbar = () => {
                         <Image className="size-5" />
                     </AvatarFallback>
                 </Avatar>
-                <CardTitle>Dehaze Image</CardTitle>
+                <CardTitle>Dehaze Image/Video</CardTitle>
             </CardHeader>
         </Card>
     );

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ImageViewer from "./components/ImageViewer";
+import Viewer from "./components/Viewer";
 import Navbar from "./components/Navbar";
 import Uploader from "./components/Uploader";
 
@@ -11,7 +11,7 @@ function App() {
                 <Navbar />
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-5">
                     <Uploader />
-                    <ImageViewer />
+                    <Viewer />
                 </div>
             </div>
         </QueryClientProvider>
